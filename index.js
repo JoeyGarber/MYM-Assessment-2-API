@@ -1,25 +1,27 @@
 const express = require('express')
 const passport = require('passport')
+const auth = require('./lib/auth') 
+const db = require('./db')
+const cookieParser = require('cookie-parser')
 const session = require('express-session')
-const auth = require('./lib/auth')
 
 const app = express()
 
+app.use(cookieParser())
 app.use(session({
-  secret: 'thisismysecret',
+  secret: 'Shh, this is a secret!',
   resave: false,
-  saveUninitialized: true,
-  cookie: { secure: true }
+  saveUninitialized: true
 }))
 
-const PORT = 8080
-app.use(auth)
-app.use(passport.session())
 app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 
-app.get('/', (req, res) => {
-  res.json({ message: "You are not logged in"})
-})
+db.connect()
+
+app.use(auth)
+
+const PORT = 8080
 
 app.get('/google',
   passport.authenticate('google', {
@@ -27,21 +29,18 @@ app.get('/google',
   }))
 
 app.get('/google/callback',
-  passport.authenticate('google', {
-    failureRedirect: '/failure'
-  }),
-  function (req, res) {
-    console.log(req.user)
-    res.redirect('/success')
-  })
-  
-  app.get('/failure', (req, res) => {
-    res.send("Failed.")
+  passport.authenticate('google'), (req, res) => {
+    res.redirect('/profile')
   })
 
-  app.get('/success', (req, res) => {
-    res.send(req.user)
-  })
+app.get('/profile', (req, res) => {
+  res.send("Welcome " + req.session.passport.user.google.name)
+})
+
+app.get('/logout', (req, res) => {
+  req.logout()
+  res.redirect(301, 'localhost:3000/')
+})
 
 app.listen(PORT, (error) => {
   if (!error) {
