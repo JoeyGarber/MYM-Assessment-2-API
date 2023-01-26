@@ -10,7 +10,7 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy
 const db = require('./db')
 const User = require('./app/user')
 
-const CLIENT_HOME_PAGE_URL = 'http://localhost:3000'
+const CLIENT_HOME_PAGE_URL = 'https://joeygarber.github.io/MYM-Assessment-2-Client/'
 const PORT = 8080
 const clientDevPort = 3000
 
@@ -18,7 +18,7 @@ const clientDevPort = 3000
 const app = express()
 
 // initialize cors
-app.use(cors({ origin: process.env.CLIENT_ORIGIN || `http://localhost:${clientDevPort}` || 'http://localhost:3000' ,
+app.use(cors({ origin: process.env.CLIENT_ORIGIN || `http://localhost:${clientDevPort}` || CLIENT_HOME_PAGE_URL || 'https://joeygarber.github.io/MYM-Assessment-2-Client/' ,
 credentials: true}))
 
 // create session, attach it to req
