@@ -18,7 +18,7 @@ const clientDevPort = 3000
 const app = express()
 
 // initialize cors
-app.use(cors({ origin: 'https://joeygarber.github.io' || process.env.CLIENT_ORIGIN || `http://localhost:${clientDevPort}`,
+app.use(cors({ origin: ['https://joeygarber.github.io', process.env.CLIENT_ORIGIN, `http://localhost:${clientDevPort}`],
 credentials: true}))
 
 // create session, attach it to req
