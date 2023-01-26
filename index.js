@@ -124,7 +124,7 @@ app.get('/google/callback',
     res.redirect(CLIENT_HOME_PAGE_URL)
   })
 
-app.get('/user', (req, res) => {
+app.post('/user', (req, res) => {
   res.json(req.user)
 })
 
