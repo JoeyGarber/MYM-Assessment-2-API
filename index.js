@@ -84,7 +84,7 @@ passport.use(new GoogleStrategy(
   {
     clientID: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
-    callbackURL: CLIENT_HOME_PAGE_URL + 'google/callback',
+    callbackURL: 'https://mym-assessment-2-api-attempt-2.vercel.app/google/callback',
     passReqToCallback: true
   }, authUser))
 
