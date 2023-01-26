@@ -18,7 +18,7 @@ const clientDevPort = 3000
 const app = express()
 
 // initialize cors
-app.use(cors({ origin: process.env.CLIENT_ORIGIN || `http://localhost:${clientDevPort}` || CLIENT_HOME_PAGE_URL || 'https://joeygarber.github.io/MYM-Assessment-2-Client/' ,
+app.use(cors({ origin: process.env.CLIENT_ORIGIN || `http://localhost:${clientDevPort}` || CLIENT_HOME_PAGE_URL || 'https://joeygarber.github.io/' ,
 credentials: true}))
 
 // create session, attach it to req
@@ -80,14 +80,12 @@ authUser = async (request, accessToken, refreshToken, profile, done) => {
 // Google handles a lot of this bit
 // Get back a user profile
 passport.use(new GoogleStrategy(
-  
   {
     clientID: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
     callbackURL: 'https://mym-assessment-2-api-attempt-2.vercel.app/google/callback',
     passReqToCallback: true
   }, authUser))
-
 
 // If I were going to add non-OAuth2.0 logins in the future, I would create a new Local Strategy here
 // It would authenticate the user, then send it to the serializers
