@@ -86,6 +86,12 @@ passport.use(new GoogleStrategy(
   }, authUser))
 
 
+// If I were going to add non-OAuth2.0 logins in the future, I would create a new Local Strategy here
+// It would authenticate the user, then send it to the serializers
+// I would use it on a separate login route, but one that would work the same way:
+// Before a user logged in, /user will return an empty string. After it'll have a user object
+// And my React app will show you the image when it queries /user, gets a user, and puts it in its state
+
 // Serialize the user
 // That attaches them to req.session.passport.user.{authenticated_user}
 passport.serializeUser(function(user, done) {
@@ -98,9 +104,11 @@ passport.deserializeUser(function(user, done) {
   done(null, user)
 })
 
+
 const checkAuthenticated = (req, res, next) => {
   if (req.isAuthenticated()) { return next() }
-  res.redirect('/google')
+  console.log('Not authenticated')
+  res.redirect(CLIENT_HOME_PAGE_URL)
 }
 
 // Login route 
@@ -115,14 +123,22 @@ app.get('/google/callback',
     res.redirect(CLIENT_HOME_PAGE_URL)
   })
 
-app.get('/user', (req, res) => {
-  console.log(req.user)
+app.get('/user', checkAuthenticated, (req, res) => {
   res.json(req.user)
 })
 
-app.post('/logout', (req, res) => {
-  req.logOut()
-  res.redirect('/google')
+app.post('/logout', (req, res, next) => {
+  req.logout(function(err) {
+    if (err) { return next(err)}
+  })
+  req.session.destroy(function (err) {
+    if (err) {
+      return next(err)
+    }
+    req.session = null
+  })
+  res.redirect(CLIENT_HOME_PAGE_URL)
+  console.log(`--------> User Logged Out`)
 })
 
 app.listen(PORT, (error) => {
