@@ -10,7 +10,8 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy
 const db = require('./db')
 const User = require('./app/user')
 
-const CLIENT_HOME_PAGE_URL = 'https://joeygarber.github.io/MYM-Assessment-2-Client/'
+// const CLIENT_HOME_PAGE_URL = 'https://joeygarber.github.io/MYM-Assessment-2-Client/'
+CLIENT_HOME_PAGE_URL = 'http://localhost:3000/'
 const PORT = 8080
 const clientDevPort = 3000
 
@@ -83,7 +84,8 @@ passport.use(new GoogleStrategy(
   {
     clientID: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
-    callbackURL: 'https://mym-assessment-2-api-attempt-2.vercel.app/google/callback',
+    // callbackURL: 'https://mym-assessment-2-api-attempt-2.vercel.app/google/callback',
+    callbackURL: 'http://localhost:8080/google/callback',
     passReqToCallback: true
   }, authUser))
 
@@ -124,9 +126,8 @@ app.get('/google/callback',
     res.redirect(CLIENT_HOME_PAGE_URL)
   })
 
-app.get('/user', (req, res) => {
-  const user = User.findOne({ 'google.id': req.user.google.id })
-  res.json(user)
+app.get('/user', checkAuthenticated, (req, res) => {
+  res.json(req.user)
 })
 
 // This is not working. Can still hit /user, and receive a req.user obj after logging out
