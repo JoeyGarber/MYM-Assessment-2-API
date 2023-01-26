@@ -1,9 +1,11 @@
 const mongoose = require('mongoose')
 
-const dbUri = "mongodb://localhost:27017"
+const localDb = "mongodb://localhost:27017"
+
+const currentDb = process.env.DB_URI || localDb
 
 const connect = async () => {
-  mongoose.connect(dbUri, {
+  mongoose.connect(currentDb, {
     useNewUrlParser: true,
     useUnifiedTopology: true
   })
