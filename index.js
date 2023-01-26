@@ -4,6 +4,7 @@ const auth = require('./lib/auth')
 const db = require('./db')
 const cookieParser = require('cookie-parser')
 const session = require('express-session')
+const CLIENT_HOME_PAGE_URL = 'http://localhost:3000'
 
 const app = express()
 
@@ -14,14 +15,34 @@ app.use(session({
   saveUninitialized: true
 }))
 
+app.use(auth)
+app.use(passport.session())
+
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
 db.connect()
 
-app.use(auth)
+
 
 const PORT = 8080
+
+app.get('/login/succeeded', (req, res) => {
+  if (req.user) {
+    res.json({
+      success: true,
+      message: 'User has successfully been authenticated',
+      user: req.session.passport.user.google
+    })
+  }
+})
+
+app.get('/login/failed', (req, res) => {
+  res.status(401).json({
+    success: false,
+    message: 'User failed to Log In'
+  })
+})
 
 app.get('/google',
   passport.authenticate('google', {
@@ -30,7 +51,7 @@ app.get('/google',
 
 app.get('/google/callback',
   passport.authenticate('google'), (req, res) => {
-    res.redirect('/profile')
+    res.redirect(301, 'http://localhost:3000/')
   })
 
 app.get('/profile', (req, res) => {
@@ -39,7 +60,7 @@ app.get('/profile', (req, res) => {
 
 app.get('/logout', (req, res) => {
   req.logout()
-  res.redirect(301, 'localhost:3000/')
+  res.redirect(301, 'http://localhost:3000/')
 })
 
 app.listen(PORT, (error) => {
