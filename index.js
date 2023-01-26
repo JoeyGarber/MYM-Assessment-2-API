@@ -125,7 +125,8 @@ app.get('/google/callback',
   })
 
 app.get('/user', (req, res) => {
-  res.json(req.user)
+  const user = User.findOne({ 'google.id': req.user.google.id })
+  res.json(user)
 })
 
 // This is not working. Can still hit /user, and receive a req.user obj after logging out
