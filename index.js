@@ -25,7 +25,10 @@ credentials: true}))
 app.use(session({
   secret: 'Shh, this is a secret!',
   resave: false,
-  saveUninitialized: true
+  saveUninitialized: true,
+  cookie: {
+    maxAge: 24 * 60 * 60 * 1000
+  }
 }))
 
 // initialize passport, sets req.session.passport.user = req.session['passport']
@@ -127,15 +130,12 @@ app.get('/user', checkAuthenticated, (req, res) => {
   res.json(req.user)
 })
 
-app.post('/logout', (req, res, next) => {
+// This is not working. Can still hit /user, and receive a req.user obj after logging out
+// Causes error if I add req.session.destroy()
+app.post('/logout', passport.session(), checkAuthenticated, (req, res, next) => {
   req.logout(function(err) {
     if (err) { return next(err)}
-  })
-  req.session.destroy(function (err) {
-    if (err) {
-      return next(err)
-    }
-    req.session = null
+    
   })
   res.redirect(CLIENT_HOME_PAGE_URL)
   console.log(`--------> User Logged Out`)
